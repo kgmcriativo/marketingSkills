@@ -1,175 +1,208 @@
 ---
 name: social-media-report
-description: "When the user wants a monthly (or periodic) social media performance report for a client or brand — pulling Instagram/Meta account data, computing month-over-month variation, generating automatic insights, and producing a client-ready deliverable. Also use when the user mentions 'relatório mensal,' 'relatório de social media,' 'monthly report,' 'social media report,' 'relatório de Instagram,' 'performance report,' 'client report,' or asks to report on followers, reach, engagement, or post performance for an account. For content creation and strategy, see social. For raw account/API access, see the meta-insights CLI in tools/clis/."
+description: "Skill privada da KGM Design e Comunicação para montar o relatório mensal (ou periódico) de social media de um cliente — puxando dados de Instagram, Facebook e YouTube, combinando com dados manuais de TikTok/LinkedIn/Google Meu Negócio, calculando variação mês a mês, gerando insights automáticos e montando o dashboard + PDF entregável. Dispare esta skill quando o usuário mencionar 'relatório mensal,' 'relatório de social media,' 'monthly report,' 'social media report,' 'relatório de Instagram,' 'performance report,' 'relatório do cliente,' ou pedir para reportar seguidores, reach, engajamento, views ou inscritos. Also use when the user asks to build or update a client's monthly social dashboard or PDF report. For content creation and strategy, see social. For raw platform data, see the meta-insights and youtube-insights CLIs in tools/clis/."
 metadata:
   version: 1.0.0
 ---
 
-# Social Media Report
+# Relatório Mensal de Social Media (KGM)
 
-You are an expert social media analyst. Your goal is to turn raw Instagram
-account data into a client-ready monthly performance report: what happened,
-how it compares to last month, why it matters, and what to do next.
+Você é o analista responsável por transformar dados brutos de redes sociais
+em um relatório de performance pronto para o cliente: o que aconteceu, como
+compara com o mês anterior, por que importa, e o que fazer a seguir.
 
-This skill has three stages: **pull data** → **compute & analyze** → **produce
-the report**. Don't skip stages — a report built from unverified numbers or
-without a real MoM comparison is not useful to a client.
+Fluxo geral:
 
-## Before Building a Report
+```
+1. Briefing   →   2. Coleta de   →   3. Cálculo e   →   4. Montagem   →   5. QA e
+   do relatório      Dados             Análise            do Entregável     Entrega
+```
 
-Gather this context (ask if not provided):
-
-1. **Client / account** — Which Instagram Business account? Confirm the
-   `META_IG_USER_ID` (and `META_PAGE_ID` if relevant). Never guess an ID.
-2. **Period** — Which month (or custom date range)? Default to the previous
-   complete calendar month if not specified.
-3. **Comparison baseline** — Month-over-month is the default. If the client
-   wants year-over-year or a custom baseline, confirm the second period too.
-4. **Delivery format** — See [Report Formats](#report-formats) below. Ask if
-   not stated.
-5. **Anything else to fold in?** — Paid Meta Ads data (via `meta-ads.js`),
-   other platforms, campaign context worth noting in the narrative.
-
-If `.agents/product-marketing.md` exists (or `.claude/product-marketing.md`),
-read it first for brand voice and business context before writing narrative
-insights.
+Não pule etapas — um relatório montado sobre números não verificados ou sem
+uma comparação MoM real não serve ao cliente.
 
 ---
 
-## Stage 1: Pull Data
+## Etapa 1 — Briefing do Relatório
 
-Use [`tools/clis/meta-insights.js`](../../tools/clis/meta-insights.js)
-(requires `META_ACCESS_TOKEN` and `META_IG_USER_ID` in the environment — see
-[tools/integrations/meta-insights.md](../../tools/integrations/meta-insights.md)
-for setup).
+Colete o que faltar (se já foi dito na conversa, confirme e siga):
 
-Pull **two periods** — the report month and the prior comparable period —
-using the composite `report monthly` command, which returns account profile,
-account-level insights, and posts with engagement in one payload:
+1. **Cliente** — nome do cliente/marca (usado na nomenclatura do arquivo).
+2. **Contas** — `META_IG_USER_ID`, `META_PAGE_ID` já configurados no
+   ambiente? Canal do YouTube (`--channel-id` ou `--handle`)? Nunca chute um
+   ID — confirme com o usuário se não estiver nas env vars.
+3. **Período** — mês de referência (padrão: mês calendário anterior
+   completo) e a base de comparação (padrão: mês anterior — MoM).
+4. **Dados da Fase 1 (manual)** — o cliente tem planilha com TikTok,
+   LinkedIn e/ou Google Meu Negócio deste mês? Peça o arquivo se ainda não
+   foi enviado. Se não houver dado de uma dessas plataformas, omita a seção
+   no relatório em vez de inventar números.
+5. **Contexto de campanha** — algum lançamento, campanha paga (via
+   `meta-ads.js`) ou evento que deva aparecer na narrativa?
+
+Se `.agents/product-marketing.md` existir, leia antes de escrever qualquer
+insight narrativo — para tom de voz e contexto de negócio do cliente.
+
+---
+
+## Etapa 2 — Coleta de Dados
+
+### Fase 2 — Automatizado (Instagram, Facebook, YouTube)
 
 ```bash
-# Report month
+# Instagram + Facebook Page — mês de referência e mês anterior (para MoM)
 node tools/clis/meta-insights.js report monthly --month 2026-07 --limit 50
-
-# Prior month, for MoM comparison
 node tools/clis/meta-insights.js report monthly --month 2026-06 --limit 50
+
+# YouTube — mesma lógica (requer YOUTUBE_API_KEY e o channel-id do cliente)
+node tools/clis/youtube-insights.js channel resolve --handle "@canaldocliente"
+node tools/clis/youtube-insights.js report monthly --channel-id UCxxxx --month 2026-07 --limit 50
+node tools/clis/youtube-insights.js report monthly --channel-id UCxxxx --month 2026-06 --limit 50
 ```
 
-For deeper per-post analysis (reach, saves — not just likes/comments), fetch
-insights for the top handful of posts individually:
+`meta-insights.js report monthly` já inclui os dados de Facebook Page
+(`facebook_page`) automaticamente quando `META_PAGE_ID` está configurado —
+não é preciso chamar `page get`/`page insights` separadamente, a menos que
+precise de detalhe extra. Ver
+[tools/integrations/meta-insights.md](../../tools/integrations/meta-insights.md)
+e [tools/integrations/youtube-insights.md](../../tools/integrations/youtube-insights.md).
 
-```bash
-node tools/clis/meta-insights.js media insights --id {media_id} --metrics reach,total_interactions,saved
-```
+Se o cliente não tiver canal de YouTube ativo, pule essa parte e não inclua
+a seção no relatório — não deixe um placeholder vazio.
 
-Don't call `media insights` for every post in a busy month — it's one request
-per post. Reserve it for the top 3-5 and bottom 2-3 by `engagement` from the
-`report monthly` output.
+**Verifique antes de seguir**: confirme que `account.username` (Instagram),
+`page.name` (Facebook) e `channel.title` (YouTube) batem com o cliente
+esperado, e que os totais são plausíveis para a cadência normal da conta. Se
+o token/ID estiver errado, a API retorna um objeto `error` — reporte isso,
+nunca reporte zero silenciosamente.
 
-**Verify before moving on**: confirm `account.username` matches the expected
-client, and that `posts_in_period` is non-zero and plausible for the account's
-normal posting cadence. If the token or ID is wrong, the API returns an
-`error` object — surface it, don't silently report zeros.
+### Fase 1 — Manual (TikTok, LinkedIn, Google Meu Negócio)
+
+Essas plataformas não têm CLI de coleta automática ainda (TikTok e LinkedIn
+exigem app review; a API de Business Profile do Google exige aprovação
+separada — não vale bloquear o projeto nisso agora). Os dados vêm de
+planilha preenchida manualmente pelo time ou pelo cliente.
+
+Use a skill `xlsx` para ler a planilha. Formato esperado descrito em
+[references/manual-data-template.md](references/manual-data-template.md) —
+se a planilha recebida não seguir esse formato, mapeie as colunas
+equivalentes em vez de rejeitar o arquivo.
 
 ---
 
-## Stage 2: Compute & Analyze
+## Etapa 3 — Cálculo e Análise
 
-### Month-over-month variation
+### Variação mês a mês
 
 ```
-variation_% = ((current - previous) / previous) * 100
+variacao_% = ((atual - anterior) / anterior) * 100
 ```
 
-Handle `previous == 0` explicitly (report as "new this period" or "N/A", never
-divide by zero). Apply this to every account-level metric (`followers_count`,
-`reach`, `profile_views`, `website_clicks`) and to aggregate post metrics
-(total posts, average engagement per post, average engagement rate).
+Trate `anterior == 0` explicitamente ("novo neste período", nunca divisão
+por zero). Aplique a cada métrica de conta (seguidores, reach, profile
+views, website clicks, inscritos, views) e a métricas agregadas de posts
+(total de posts, engajamento médio por post).
 
-### Automatic insight generation
+### Geração automática de insights
 
-Insights are generated by applying the **Awareness / Engagement / Conversion**
-metrics framework from the `social` skill against the computed variations and
-thresholds. Full framework, thresholds, and narrative templates are in
-[references/metrics-framework.md](references/metrics-framework.md) — read it
-before writing the analysis section. In short:
+Os insights são gerados aplicando o framework **Awareness / Engagement /
+Conversion** da skill `social`, estendido com thresholds e sinais
+cross-métrica específicos para múltiplas plataformas. Framework completo,
+fórmulas e limites em
+[references/metrics-framework.md](references/metrics-framework.md) — leia
+antes de escrever a seção de análise.
 
-- **Awareness** (reach, follower growth, profile views): flag swings beyond
-  ±15%.
-- **Engagement** (engagement rate, comments, saves): flag swings beyond ±20%;
-  always surface top 3 and bottom 2-3 posts by engagement.
-- **Conversion** (website clicks, profile-to-action signals): flag swings
-  beyond ±25%, and always call out if conversion metrics move opposite to
-  awareness (e.g., reach up but clicks down — a targeting or CTA problem).
-
-Also identify **content patterns**: compare average engagement by
-`media_type`/`media_product_type` (REELS vs FEED vs CAROUSEL_ALBUM) to tell
-the client what format is working.
-
-Every insight in the report must be traceable to a specific number in the
-pulled data — no generic filler like "engagement was strong this month"
-without the metric and delta behind it.
+Todo insight no relatório precisa ser rastreável a um número específico nos
+dados coletados — nunca um "o engajamento foi bom esse mês" genérico sem a
+métrica e o delta por trás.
 
 ---
 
-## Stage 3: Produce the Report
+## Etapa 4 — Montagem do Entregável
 
-### Report Formats
+### Formato (decisão já fechada do projeto)
 
-Ask the client/user which they want, unless already specified:
+- **Dashboard** — Artifact HTML, **link fixo**: publique com o mesmo
+  `file_path` todo mês (ex.: `dashboard-{cliente}.html`) para o link não
+  mudar — é um redeploy mensal, não um novo artifact. Carregue a skill
+  `dataviz` antes de montar qualquer gráfico, e `artifact-design` antes de
+  escrever a página.
+- **PDF resumido** — versão condensada (1-2 páginas) com o resumo executivo
+  e os KPIs principais, para envio direto ao cliente. Use a skill `pdf`.
+- **Sem PPTX** — não gere apresentação PPTX para este fluxo.
 
-1. **PPTX + PDF** — client-ready leave-behind. Use the `pptx` skill to build
-   the deck from the structure in
-   [references/report-template.md](references/report-template.md), then the
-   `pdf` skill (or the pptx skill's export path) to produce the PDF.
-2. **Dashboard Artifact** — fast, interactive, good for internal review or a
-   live link to share. Load the `dataviz` skill before building any charts,
-   then the `artifact-design` skill before writing the page. Use the same
-   section structure as the template.
-3. **Both** — recommended default when the user hasn't stated a preference:
-   the Artifact for quick review/iteration, PPTX+PDF as the durable
-   deliverable once the client signs off on the content.
+### Branding KGM (fixo, nos moldes da skill `kgm-kv`)
 
-Use `AskUserQuestion` if the format genuinely isn't clear from context —
-don't guess and build the wrong one for a client deliverable.
+- Rodapé discreto em todas as páginas/telas: "KGM Design e Comunicação".
+- Nome do cliente e período em destaque no topo/capa.
+- Paleta e tipografia: siga a identidade do cliente se fornecida; senão,
+  use uma paleta neutra e profissional (ver `dataviz`/`artifact-design`
+  para a metodologia de cores).
 
-### Structure
+### Padrão de nomenclatura (obrigatório)
 
-Follow [references/report-template.md](references/report-template.md) for
-section-by-section content. At a high level: cover → executive summary (KPI
-cards with MoM deltas) → awareness/engagement/conversion breakdown → top &
-bottom posts → content-format comparison → automated insights & next-month
-recommendations → appendix (raw numbers, methodology, data limitations).
+```
+KGM_Relatorio_NomeCliente_202607.pdf
+KGM_Relatorio_NomeCliente_202607   (título do dashboard/Artifact)
+```
 
-### Data limitations to disclose
+Use o mês de referência do relatório (não a data de geração) no `AAAAMM`.
 
-Always note in the report:
-- Instagram insights can lag up to 48 hours; the most recent 1-2 days of the
-  period may be undercounted.
-- `reach`/`profile_views` are Meta's own estimates, not exact counts.
-- Per-post `reach`/`saved` are only pulled for a sample of posts (top/bottom
-  performers), not every post in the period, unless the user asked for full
-  coverage.
+### Estrutura
+
+Siga [references/report-template.md](references/report-template.md) seção
+por seção: capa → resumo executivo (KPIs com delta MoM) → Instagram →
+Facebook → YouTube → plataformas Fase 1 (se houver dado) → top/bottom posts
+→ comparação de formato de conteúdo → insights automáticos e recomendações
+→ apêndice (números brutos, metodologia, limitações).
+
+### Limitações a divulgar sempre
+
+- Insights do Instagram/Facebook podem atrasar até 48h; os últimos 1-2 dias
+  do período podem estar subcontados.
+- `reach`/`profile_views`/page insights são estimativas da própria Meta, não
+  contagens exatas.
+- `reach`/`saved` por post só são puxados para uma amostra (top/bottom
+  performers), não para todos os posts do período.
+- Dados da Fase 1 (TikTok, LinkedIn, GMB) são preenchidos manualmente — sem
+  a mesma verificação automática dos dados de API.
 
 ---
 
-## Task-Specific Questions
+## Etapa 5 — QA e Entrega
 
-1. Which Instagram account, and confirm `META_IG_USER_ID`?
-2. Which month (or date range), and what's the comparison baseline?
-3. PPTX+PDF, Artifact dashboard, or both?
-4. Any campaign, launch, or paid-media context that should inform the
-   narrative (e.g., pull from `meta-ads.js` too)?
-5. Any brand voice or tone constraints for the written insights?
+Checklist antes de entregar:
+
+- [ ] Todas as contas/plataformas confirmadas batem com o cliente esperado
+- [ ] MoM calculado corretamente (incluindo casos de `anterior == 0`)
+- [ ] Todo insight cita o número/delta real, nada genérico
+- [ ] Seções de plataformas sem dado foram omitidas, não deixadas em branco
+- [ ] Rodapé "KGM Design e Comunicação" presente no dashboard e no PDF
+- [ ] Nome do arquivo segue `KGM_Relatorio_NomeCliente_AAAAMM`
+- [ ] Dashboard publicado no mesmo `file_path`/URL do mês anterior (link
+      fixo), quando já existir um relatório anterior desse cliente
+- [ ] Limitações de dados listadas no apêndice
 
 ---
 
-## Related Skills
+## Perguntas Específicas da Tarefa
 
-- **social**: Content creation, strategy, and the underlying Awareness /
-  Engagement / Conversion metrics framework this skill applies
-- **analytics**: For cross-platform tracking and attribution beyond social
-- **ads**: For pairing organic performance with paid Meta Ads results
-- **pptx**: For building the PPTX deliverable
-- **pdf**: For producing the PDF export
-- **dataviz**: For chart/KPI design when building an Artifact dashboard
+1. Qual cliente e quais contas confirmar (Instagram, Facebook, YouTube)?
+2. Qual o mês de referência e a base de comparação?
+3. Há planilha da Fase 1 (TikTok/LinkedIn/GMB) para este mês?
+4. Existe um dashboard anterior desse cliente para manter o mesmo link?
+5. Algum contexto de campanha/lançamento que deva entrar na narrativa?
+
+---
+
+## Skills Relacionadas
+
+- **social**: framework de métricas Awareness/Engagement/Conversion usado
+  como base, e estratégia de conteúdo
+- **kgm-kv**: padrão de branding e nomenclatura KGM que esta skill segue
+- **analytics**: tracking e atribuição cross-plataforma além de social
+- **ads**: para cruzar performance orgânica com resultados de Meta Ads
+- **xlsx**: para ler a planilha manual da Fase 1
+- **pdf**: para o PDF resumido
+- **dataviz**: para os gráficos/KPIs do dashboard
+- **artifact-design**: para a página do dashboard

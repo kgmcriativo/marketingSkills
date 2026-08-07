@@ -2,6 +2,7 @@
 
 const TOKEN = process.env.META_ACCESS_TOKEN
 const DEFAULT_IG_USER_ID = process.env.META_IG_USER_ID
+const DEFAULT_PAGE_ID = process.env.META_PAGE_ID
 const BASE_URL = 'https://graph.facebook.com/v21.0'
 
 if (!TOKEN) {
@@ -32,11 +33,11 @@ function parseArgs(args) {
 const args = parseArgs(process.argv.slice(2))
 const [cmd, sub, ...rest] = args._
 
-async function api(method, path, body) {
+async function api(method, path, body, token = TOKEN) {
   const url = `${BASE_URL}${path}`
   const opts = {
     method,
-    headers: { Authorization: `Bearer ${TOKEN}` },
+    headers: { Authorization: `Bearer ${token}` },
   }
   if (body) {
     opts.headers['Content-Type'] = 'application/json'
@@ -56,6 +57,21 @@ async function api(method, path, body) {
 
 function getIgUserId() {
   return args['ig-user-id'] || DEFAULT_IG_USER_ID
+}
+
+function getPageId() {
+  return args['page-id'] || DEFAULT_PAGE_ID
+}
+
+// Page-level insights/posts endpoints require a Page Access Token, not the
+// System User token directly. Exchange it once per run and cache it.
+let pageTokenCache
+async function getPageAccessToken(pageId) {
+  if (pageTokenCache) return pageTokenCache
+  const res = await api('GET', `/${pageId}?fields=access_token`)
+  if (res.error) return res
+  pageTokenCache = res.access_token
+  return pageTokenCache
 }
 
 // ---- date helpers ----
@@ -129,6 +145,58 @@ async function fetchMediaInRange(igUserId, { since, until, limit = 50, maxPages 
   return { data: items }
 }
 
+// ---- page posts pagination (mirrors fetchMediaInRange) ----
+
+async function fetchPagePostsInRange(pageId, pageToken, { since, until, limit = 50, maxPages = 10 } = {}) {
+  const fields = 'id,message,created_time,permalink_url,likes.summary(true).limit(0),comments.summary(true).limit(0),shares'
+  const sinceDate = since ? new Date(`${since}T00:00:00Z`) : null
+  const untilDate = until ? new Date(`${until}T23:59:59Z`) : null
+
+  const items = []
+  let after
+  let pages = 0
+  let hitEnd = false
+
+  while (pages < maxPages) {
+    let path = `/${pageId}/posts?fields=${fields}&limit=${Math.min(limit, 50)}`
+    if (after) path += `&after=${after}`
+    const page = await api('GET', path, undefined, pageToken)
+    if (page.error) return page
+    const data = page.data || []
+    if (data.length === 0) break
+
+    for (const item of data) {
+      const ts = new Date(item.created_time)
+      if (sinceDate && ts < sinceDate) { hitEnd = true; break }
+      if (untilDate && ts > untilDate) continue
+      items.push(item)
+      if (items.length >= limit) { hitEnd = true; break }
+    }
+
+    pages++
+    after = page.paging && page.paging.cursors && page.paging.next ? page.paging.cursors.after : undefined
+    if (hitEnd || !after) break
+  }
+
+  return { data: items }
+}
+
+function normalizePagePost(item) {
+  const likes = (item.likes && item.likes.summary && item.likes.summary.total_count) || 0
+  const comments = (item.comments && item.comments.summary && item.comments.summary.total_count) || 0
+  const shares = (item.shares && item.shares.count) || 0
+  return {
+    id: item.id,
+    created_time: item.created_time,
+    permalink_url: item.permalink_url,
+    message: item.message ? item.message.slice(0, 140) : null,
+    like_count: likes,
+    comments_count: comments,
+    share_count: shares,
+    engagement: likes + comments + shares,
+  }
+}
+
 async function main() {
   let result
 
@@ -185,6 +253,48 @@ async function main() {
       }
       break
 
+    case 'page':
+      switch (sub) {
+        case 'get': {
+          const pageId = getPageId()
+          if (!pageId) { result = { error: '--page-id required (or set META_PAGE_ID)' }; break }
+          const fields = args.fields || 'id,name,category,fan_count,followers_count,link'
+          result = await api('GET', `/${pageId}?fields=${fields}`)
+          break
+        }
+        case 'insights': {
+          const pageId = getPageId()
+          if (!pageId) { result = { error: '--page-id required (or set META_PAGE_ID)' }; break }
+          const pageToken = await getPageAccessToken(pageId)
+          if (pageToken.error) { result = pageToken; break }
+          const { since, until } = resolveDateRange()
+          // Meta deprecates/renames Page Insights metrics frequently. These
+          // three are confirmed valid as of the API version above; adjust if
+          // the API returns "must be a valid insights metric".
+          const metrics = args.metrics || 'page_post_engagements,page_views_total,page_video_views'
+          const period = args.period || 'day'
+          result = await api(
+            'GET',
+            `/${pageId}/insights?metric=${metrics}&period=${period}&since=${since}&until=${until}`,
+            undefined,
+            pageToken
+          )
+          break
+        }
+        case 'posts': {
+          const pageId = getPageId()
+          if (!pageId) { result = { error: '--page-id required (or set META_PAGE_ID)' }; break }
+          const pageToken = await getPageAccessToken(pageId)
+          if (pageToken.error) { result = pageToken; break }
+          const limit = Number(args.limit) || 25
+          result = await fetchPagePostsInRange(pageId, pageToken, { since: args.since, until: args.until, limit })
+          break
+        }
+        default:
+          result = { error: 'Unknown page subcommand. Use: get, insights, posts' }
+      }
+      break
+
     case 'report':
       switch (sub) {
         case 'monthly': {
@@ -235,6 +345,45 @@ async function main() {
             posts_in_period: posts.length,
             posts: posts.sort((a, b) => b.engagement - a.engagement),
           }
+
+          // Facebook Page data is optional — included whenever a page ID is
+          // available, since it's the "equivalent" dataset for the same report.
+          const pageId = args['skip-page'] ? null : getPageId()
+          if (pageId) {
+            const pageToken = await getPageAccessToken(pageId)
+            if (pageToken.error) {
+              result.facebook_page = { error: pageToken.error }
+            } else {
+              const pageMetrics = args['page-metrics'] || 'page_post_engagements,page_views_total,page_video_views'
+              const [page, pageInsights, pagePosts] = await Promise.all([
+                api('GET', `/${pageId}?fields=id,name,category,fan_count,followers_count`, undefined, pageToken),
+                api('GET', `/${pageId}/insights?metric=${pageMetrics}&period=day&since=${since}&until=${until}`, undefined, pageToken),
+                fetchPagePostsInRange(pageId, pageToken, { since, until, limit }),
+              ])
+
+              const normalizedPosts = Array.isArray(pagePosts.data)
+                ? pagePosts.data.map(normalizePagePost).sort((a, b) => b.engagement - a.engagement)
+                : []
+
+              result.facebook_page = {
+                page_id: pageId,
+                page: page.error ? page : {
+                  name: page.name,
+                  category: page.category,
+                  fan_count: page.fan_count,
+                  followers_count: page.followers_count,
+                },
+                page_insights: pageInsights.error ? pageInsights : (pageInsights.data || []).reduce((acc, m) => {
+                  acc[m.name] = m.values && m.values.length
+                    ? m.values.reduce((sum, v) => sum + (typeof v.value === 'number' ? v.value : 0), 0)
+                    : null
+                  return acc
+                }, {}),
+                posts_in_period: pagePosts.error ? null : normalizedPosts.length,
+                posts: pagePosts.error ? pagePosts : normalizedPosts,
+              }
+            }
+          }
           break
         }
         default:
@@ -248,8 +397,9 @@ async function main() {
         usage: {
           account: 'account [get|insights] [--ig-user-id <id>] [--metrics reach,profile_views,website_clicks] [--period day] [--metric-type total_value] [--since <date>] [--until <date>] [--month YYYY-MM]',
           media: 'media [list|insights] [--ig-user-id <id>] [--limit 25] [--after <cursor>] [--since <date>] [--until <date>] [--id <media-id>] [--metrics reach,total_interactions,saved]',
-          report: 'report monthly [--ig-user-id <id>] [--month YYYY-MM] [--since <date>] [--until <date>] [--limit 50]',
-          notes: 'Without --since/--until/--month, account insights and report default to the previous complete calendar month.',
+          page: 'page [get|insights|posts] [--page-id <id>] [--metrics page_post_engagements,page_views_total,page_video_views] [--period day] [--since <date>] [--until <date>] [--month YYYY-MM] [--limit 25]',
+          report: 'report monthly [--ig-user-id <id>] [--page-id <id>] [--skip-page] [--month YYYY-MM] [--since <date>] [--until <date>] [--limit 50]',
+          notes: 'Without --since/--until/--month, account/page insights and report default to the previous complete calendar month. report monthly includes Facebook Page data automatically when META_PAGE_ID (or --page-id) is set; pass --skip-page to omit it.',
         },
       }
   }

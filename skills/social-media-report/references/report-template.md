@@ -1,143 +1,153 @@
 # Monthly Social Media Report Template
 
-Use this structure for both delivery formats — as PPTX slide content (one
-section ≈ one slide or slide group) and as an Artifact dashboard (one
-section ≈ one panel/card group). Fill every placeholder with real numbers
-from Stage 1/2; never ship a placeholder to a client.
+Two deliverables share this structure: the **Dashboard** (Artifact HTML,
+redeployed monthly to the same link) and the **PDF resumido** (a condensed
+1-2 page version — cover + executive summary + KPI table + top insights
+only, skip the detailed per-platform breakdowns and appendix). Fill every
+placeholder with real numbers from Stage 2/3 of the SKILL.md workflow —
+never ship a placeholder to a client.
+
+File naming: `KGM_Relatorio_{NomeCliente}_{AAAAMM}` for both the PDF file
+and the dashboard title, using the report's reference month, not the
+generation date.
 
 ---
 
-## 1. Cover
+## 1. Capa
 
 ```
-{Client name} — Social Media Report
-Instagram: @{username}
-Period: {Month Year} (compared to {previous month/period})
-Prepared by: KGM Design e Comunicação
-Report date: {date}
+{Nome do Cliente} — Relatório de Social Media
+Período: {Mês Ano} (comparado a {mês anterior})
+KGM Design e Comunicação
+Data do relatório: {data}
 ```
 
 ---
 
-## 2. Executive Summary
+## 2. Resumo Executivo
 
-KPI cards, each with current value + MoM delta (▲/▼ {X}%):
+KPI cards, current value + MoM delta (▲/▼ {X}%), one row per platform that
+has data this period:
 
 ```
-| Metric | This Month | MoM Change |
-|--------|-----------|------------|
-| Followers | {value} | {+/-X%} |
-| Reach | {value} | {+/-X%} |
-| Profile Views | {value} | {+/-X%} |
-| Website Clicks | {value} | {+/-X%} |
-| Posts Published | {value} | {+/-X%} |
-| Avg. Engagement Rate | {value}% | {+/-X%} |
+| Plataforma | Métrica | Este Mês | Variação MoM |
+|------------|---------|----------|--------------|
+| Instagram | Seguidores | {value} | {+/-X%} |
+| Instagram | Reach | {value} | {+/-X%} |
+| Instagram | Engajamento médio | {value}% | {+/-X%} |
+| Facebook | Seguidores | {value} | {+/-X%} |
+| YouTube | Inscritos | {value} | {+/-X%} |
+| YouTube | Visualizações (período) | {value} | {+/-X%} |
 ```
+
+Omit rows for platforms with no data this period — don't leave a blank row.
 
 2-3 sentence narrative: the single biggest story of the month (the
-"significant" threshold insight from the metrics framework), stated plainly
-— what happened and why it matters for the business.
+"significant" threshold insight from metrics-framework.md), stated plainly.
 
 ---
 
-## 3. Awareness
+## 3. Instagram
 
-- Reach trend (this month vs. last): {value}, {delta}
-- Follower growth: {net new} ({rate}%)
-- Profile views: {value}, {delta}
-- 1-2 sentence insight, tied to the specific numbers above
+- Awareness: reach, follower growth, profile views — value + MoM delta
+- Engagement: avg. engagement rate, avg. engagement per post — value + delta
+- Conversion: website clicks — value + delta
+- 1-2 sentence insight per bucket, tied to the specific numbers
 
-Chart: reach and follower count, current vs. previous period (bar or KPI
-comparison — see the `dataviz` skill for chart selection when building an
-Artifact).
+Chart: reach and engagement rate trend across the period (see `dataviz`
+skill for chart selection).
 
 ---
 
-## 4. Engagement
+## 4. Facebook
 
-- Average engagement rate: {value}%, {delta}
-- Average engagement per post: {value}, {delta}
-- Total interactions on top posts: {value}
+- Fan/follower count, page views, post engagements — value + MoM delta
+- 1-2 sentence insight
+- If `facebook_page.posts` errored (permission gap), note it here instead
+  of a post-level breakdown
+
+---
+
+## 5. YouTube
+
+(Omit this whole section if the client has no active channel.)
+
+- Subscriber count, lifetime views — value + MoM delta
+- Videos published this period, avg. views/engagement per video
 - 1-2 sentence insight
 
-Chart: engagement rate by post, chronological across the period, to spot
-trend vs. one-off spikes.
+---
+
+## 6. Outras Plataformas (Fase 1 — dados manuais)
+
+(Omit any platform row with no data this period.)
+
+```
+| Plataforma | Métrica | Este Mês | Variação MoM |
+|------------|---------|----------|--------------|
+| TikTok | Seguidores | {value} | {+/-X%} |
+| LinkedIn | Seguidores | {value} | {+/-X%} |
+| Google Meu Negócio | Visualizações do perfil | {value} | {+/-X%} |
+```
+
+Label this section clearly as manually reported data (see
+manual-data-template.md), not pulled live.
 
 ---
 
-## 5. Conversion
+## 7. Posts em Destaque (Instagram)
 
-- Website clicks: {value}, {delta}
-- Profile views → clicks ratio: {value}%
-- 1-2 sentence insight, including whether conversion moved with or against
-  awareness (see cross-metric signals in metrics-framework.md)
-
----
-
-## 6. Top Performing Posts
-
-For each of the top 3 (with thumbnail/permalink if building a visual
-deliverable):
+Top 3, then bottom 2-3 (excluding the final 48h of the period):
 
 ```
 {rank}. {media_type} — {date}
 "{caption excerpt}"
 ❤️ {like_count}  💬 {comments_count}  🔖 {saved, if pulled}  📈 {reach, if pulled}
-Why it worked: {1 sentence, tied to format/topic/timing}
-```
-
-## 7. Underperforming Posts
-
-Same structure, bottom 2-3 (excluding posts from the final 48h of the
-period). Frame as learning, not blame:
-
-```
-{media_type} — {date}
-"{caption excerpt}"
-❤️ {like_count}  💬 {comments_count}
-Possible reason: {1 sentence, tied to format/topic/timing}
+Por que funcionou / possível motivo: {1 sentence, tied to format/topic/timing}
 ```
 
 ---
 
-## 8. Content Format Comparison
+## 8. Comparação de Formato de Conteúdo (Instagram)
 
 ```
-| Format | Posts | Avg. Engagement Rate | Share of Posts |
-|--------|-------|----------------------|----------------|
+| Formato | Posts | Engajamento Médio | % dos Posts |
+|---------|-------|--------------------|-------------|
 | Reels | {n} | {rate}% | {%} |
 | Feed | {n} | {rate}% | {%} |
-| Carousel | {n} | {rate}% | {%} |
+| Carrossel | {n} | {rate}% | {%} |
 ```
 
 1-2 sentence takeaway on whether the posting mix matches what's performing.
 
 ---
 
-## 9. Automated Insights & Recommendations
+## 9. Insights Automáticos e Recomendações
 
-List every flagged insight from Stage 2 (metrics-framework.md thresholds),
-each paired with one concrete recommendation:
+Every flagged insight from Stage 3 (metrics-framework.md thresholds), each
+paired with one concrete recommendation:
 
 ```
 ### {Insight headline}
-**What happened:** {numbers and delta}
-**Why it matters:** {business implication}
-**Recommendation:** {specific, testable action for next month}
+**O que aconteceu:** {numbers and delta}
+**Por que importa:** {business implication}
+**Recomendação:** {specific, testable action for next month}
 ```
 
 ---
 
-## 10. Next Month Focus
+## 10. Foco do Próximo Mês
 
 3-5 bullet priorities derived directly from the recommendations above,
 ordered by expected impact.
 
 ---
 
-## 11. Appendix
+## 11. Apêndice (dashboard completo only — omit from the PDF resumido)
 
-- Full KPI table (all metrics pulled, not just headline ones)
-- Methodology: data source (Instagram Graph API via `meta-insights.js`),
-  period definition, sampling note for per-post reach/saves
-- Data limitations (see SKILL.md "Data limitations to disclose")
+- Tabela completa de KPIs (todas as métricas puxadas, não só as principais)
+- Metodologia: fontes de dados (Instagram/Facebook Graph API via
+  `meta-insights.js`, YouTube Data API via `youtube-insights.js`, planilha
+  manual para TikTok/LinkedIn/GMB), definição do período
+- Limitações de dados (ver SKILL.md "Limitações a divulgar sempre")
+- Rodapé: "KGM Design e Comunicação" em todas as páginas/telas

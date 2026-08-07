@@ -3,43 +3,45 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Preciso do relatório mensal de social media da conta @dracrisraposo (Instagram Business ID 17841439791988739) referente a julho de 2026, comparado com junho.",
-      "expected_output": "Should confirm the IG user ID and period before running anything. Should use tools/clis/meta-insights.js 'report monthly' for both July 2026 and June 2026 to get account data, account insights, and posts with engagement. Should compute month-over-month variation using the (current-previous)/previous formula for followers, reach, profile views, website clicks, and engagement metrics. Should apply the Awareness/Engagement/Conversion threshold framework from references/metrics-framework.md to flag notable/significant insights, citing actual numbers. Should identify top and bottom performing posts by engagement. Should ask which delivery format (PPTX+PDF, Artifact dashboard, or both) if not specified before producing the final deliverable.",
+      "prompt": "Preciso do relatório mensal de social media da Dra Cris Raposo (Instagram Business ID 17841439791988739, Page ID 286423904550638) referente a julho de 2026, comparado com junho.",
+      "expected_output": "Should confirm the accounts/IDs and period before running anything. Should use tools/clis/meta-insights.js 'report monthly' for both July 2026 and June 2026 to get Instagram account data, account insights, Facebook Page data (via the automatic facebook_page section), and posts with engagement. Should compute month-over-month variation using the (current-previous)/previous formula. Should apply the Awareness/Engagement/Conversion threshold framework from references/metrics-framework.md to flag notable/significant insights, citing actual numbers, across both Instagram and Facebook. Should identify top and bottom performing Instagram posts. Should produce the output as a Dashboard Artifact (fixed link) plus a condensed PDF, per the closed scope decision — not a PPTX.",
       "assertions": [
-        "Confirms IG user ID and period before pulling data",
+        "Confirms IG user ID, Page ID, and period before pulling data",
         "Uses meta-insights.js report monthly for both the report month and prior month",
+        "Includes Facebook Page data (facebook_page section) alongside Instagram",
         "Computes MoM variation with the correct formula, handling previous=0",
         "Applies Awareness/Engagement/Conversion thresholds from metrics-framework.md",
         "Cites specific numbers/deltas for every insight, not generic statements",
-        "Identifies top and bottom performing posts",
-        "Asks about delivery format before building the final report if unspecified"
+        "Identifies top and bottom performing Instagram posts",
+        "Produces Dashboard + PDF, does not produce a PPTX"
       ],
       "files": []
     },
     {
       "id": 2,
-      "prompt": "Monta um dashboard rápido em Artifact com os KPIs de Instagram do último mês fechado.",
-      "expected_output": "Should default the period to the previous complete calendar month since none was specified. Should pull data via meta-insights.js report monthly (and the prior month for MoM context, since KPI deltas are core to the report). Should load the dataviz skill before building any charts, and artifact-design before writing the page. Should follow the KPI-card + section structure from references/report-template.md, adapted for a dashboard layout. Should disclose data limitations (insights lag, estimated reach, sampled per-post metrics).",
+      "prompt": "Monta o dashboard do mês passado pra Dra Cris, incluindo o canal do YouTube dela também.",
+      "expected_output": "Should default the period to the previous complete calendar month since none was specified. Should pull Instagram/Facebook data via meta-insights.js report monthly and YouTube data via youtube-insights.js (resolving the channel ID first if only a handle is known), for both the report month and prior month for MoM context. If no YouTube channel is confirmed/found for this client, should say so rather than fabricating channel data. Should load the dataviz skill before building charts and artifact-design before writing the page. Should publish the dashboard with a stable file_path so the link stays fixed across monthly redeploys. Should follow the report-template.md structure including the YouTube section. Should disclose data limitations.",
       "assertions": [
         "Defaults to previous complete calendar month when unspecified",
-        "Still pulls the prior period for MoM comparison",
-        "Loads dataviz skill before building charts",
-        "Loads artifact-design skill before writing the Artifact page",
-        "Follows report-template.md section structure",
+        "Pulls Instagram/Facebook via meta-insights.js and YouTube via youtube-insights.js",
+        "Resolves YouTube channel ID before pulling channel/video data if only a handle was given",
+        "Does not fabricate YouTube data if no channel is confirmed",
+        "Loads dataviz and artifact-design skills before building the dashboard",
+        "Publishes to a stable file_path/URL for the fixed-link redeploy pattern",
         "Discloses data limitations in the output"
       ],
       "files": []
     },
     {
       "id": 3,
-      "prompt": "Cliente pediu pra gente mandar o relatório de agosto em PDF pra apresentação com o time de marketing deles. É pra conta que já configuramos, a Dra Cris.",
-      "expected_output": "Should recognize this as a PPTX+PDF delivery request (client presentation context implies a polished leave-behind) and proceed toward that format, or confirm if genuinely ambiguous. Should still gather/confirm the period (August) and pull two months of data for MoM. Should use the pptx skill to build the deck per report-template.md structure, then produce a PDF export. Should not fabricate account data — should pull real numbers via meta-insights.js rather than inventing plausible-looking metrics.",
+      "prompt": "Cliente pediu o relatório de agosto em PDF pra apresentação com o time de marketing deles. É pra conta que já configuramos, a Dra Cris.",
+      "expected_output": "Should produce the condensed PDF resumido per the closed scope (Dashboard + PDF, no PPTX) rather than building a slide deck. Should confirm the period (August) and pull two months of data (Instagram, Facebook, and YouTube if applicable) for MoM. Should use the pdf skill to produce the PDF following the condensed structure in report-template.md (cover, executive summary, KPI table, top insights — skipping the full per-platform breakdown and appendix). Should not fabricate account data — should pull real numbers via the CLIs rather than inventing plausible-looking metrics. Should apply the KGM_Relatorio_NomeCliente_AAAAMM naming convention to the output file.",
       "assertions": [
-        "Infers or confirms PPTX+PDF as the appropriate format for a client presentation",
+        "Produces a PDF (not a PPTX) per the closed format decision",
         "Confirms/derives the correct period (August) and pulls prior month for comparison",
-        "Uses meta-insights.js to pull real data rather than fabricating numbers",
-        "Uses the pptx skill to build the deck following report-template.md",
-        "Produces a PDF export of the deck"
+        "Uses the real data CLIs rather than fabricating numbers",
+        "Uses the pdf skill and follows the condensed report-template.md structure",
+        "Applies the KGM_Relatorio_NomeCliente_AAAAMM file naming convention"
       ],
       "files": []
     },
@@ -53,6 +55,19 @@
         "Still reports account-level MoM metrics",
         "Flags zero posting activity as a notable insight with a recommendation",
         "Applies MoM zero-division edge case handling correctly if triggered"
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Anexei a planilha com os números de TikTok e LinkedIn desse mês. Inclui isso no relatório junto com o Instagram.",
+      "expected_output": "Should use the xlsx skill to read the attached spreadsheet, mapping columns per references/manual-data-template.md (metrica/valor_mes_atual/valor_mes_anterior per platform tab). Should apply the same MoM formula and Awareness/Engagement/Conversion bucket mapping used for automated platforms. Should clearly label the TikTok/LinkedIn section as manually reported data (Fase 1), separate from the automated Instagram/Facebook/YouTube data, per report-template.md section 6. Should omit Google Meu Negócio from that section since no data was provided for it, rather than reporting zeros.",
+      "assertions": [
+        "Uses the xlsx skill to read the manual spreadsheet",
+        "Maps spreadsheet columns per manual-data-template.md format",
+        "Applies the same MoM formula to manual-platform metrics as automated ones",
+        "Clearly labels the manual data section as separate from automated data",
+        "Omits Google Meu Negócio (no data provided) instead of reporting zeros"
       ],
       "files": []
     }

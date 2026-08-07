@@ -71,6 +71,7 @@ Quick reference for AI agents to discover tool capabilities and integration meth
 | google-ads | Ads | ✓ | ✓ | [✓](clis/google-ads.js) | ✓ | [google-ads.md](integrations/google-ads.md) |
 | meta-ads | Ads | ✓ | - | [✓](clis/meta-ads.js) | ✓ | [meta-ads.md](integrations/meta-ads.md) |
 | meta-insights | Social | ✓ | - | [✓](clis/meta-insights.js) | ✓ | [meta-insights.md](integrations/meta-insights.md) |
+| youtube-insights | Social | ✓ | - | [✓](clis/youtube-insights.js) | ✓ | [youtube-insights.md](integrations/youtube-insights.md) |
 | linkedin-ads | Ads | ✓ | - | [✓](clis/linkedin-ads.js) | - | [linkedin-ads.md](integrations/linkedin-ads.md) |
 | tiktok-ads | Ads | ✓ | - | [✓](clis/tiktok-ads.js) | ✓ | [tiktok-ads.md](integrations/tiktok-ads.md) |
 | zapier | Automation | ✓ | ✓ | [✓](clis/zapier.js) | ✓ | [zapier.md](integrations/zapier.md) |

@@ -65,7 +65,7 @@ Every CLI reads credentials from environment variables:
 | `mailchimp` | `MAILCHIMP_API_KEY` |
 | `mention-me` | `MENTIONME_API_KEY` |
 | `meta-ads` | `META_ACCESS_TOKEN`, `META_AD_ACCOUNT_ID` |
-| `meta-insights` | `META_ACCESS_TOKEN`, `META_IG_USER_ID` |
+| `meta-insights` | `META_ACCESS_TOKEN`, `META_IG_USER_ID`, `META_PAGE_ID` |
 | `mixpanel` | `MIXPANEL_TOKEN` (ingestion), `MIXPANEL_API_KEY` + `MIXPANEL_SECRET` (query) |
 | `onesignal` | `ONESIGNAL_REST_API_KEY`, `ONESIGNAL_APP_ID` |
 | `optimizely` | `OPTIMIZELY_API_KEY` |
@@ -88,6 +88,7 @@ Every CLI reads credentials from environment variables:
 | `lemlist` | `LEMLIST_API_KEY` |
 | `snov` | `SNOV_CLIENT_ID`, `SNOV_CLIENT_SECRET` |
 | `wistia` | `WISTIA_API_KEY` |
+| `youtube-insights` | `YOUTUBE_API_KEY` |
 | `zapier` | `ZAPIER_API_KEY` |
 
 ## Security
@@ -188,4 +189,5 @@ DOMAINS=$(rewardful affiliates list | jq -r '.data[].email')
 | `trustpilot.js` | Reviews | [Trustpilot](https://trustpilot.com) |
 | `typeform.js` | Forms | [Typeform](https://typeform.com) |
 | `wistia.js` | Video | [Wistia](https://wistia.com) |
+| `youtube-insights.js` | Social | [YouTube Data API](https://developers.google.com/youtube/v3) |
 | `zapier.js` | Automation | [Zapier](https://zapier.com) |

@@ -2,12 +2,15 @@
 
 This extends the `social` skill's Analytics & Optimization metrics
 (Awareness / Engagement / Conversion) into concrete formulas and thresholds
-for automated monthly insight generation from `meta-insights.js` output.
+for automated monthly insight generation across all platforms in the
+report: Instagram + Facebook (`meta-insights.js`), YouTube
+(`youtube-insights.js`), and the Phase 1 manual platforms (TikTok,
+LinkedIn, Google Meu Negócio — see
+[manual-data-template.md](manual-data-template.md)).
 
 ## Data Sources
 
-All fields below come from `node tools/clis/meta-insights.js report monthly`
-unless noted otherwise.
+### Instagram (`meta-insights.js report monthly`)
 
 | Bucket | Metric | Source field |
 |--------|--------|-------------|
@@ -19,6 +22,40 @@ unless noted otherwise.
 | Engagement | Saves, total interactions | `media insights` per post (sampled) |
 | Conversion | Website clicks | `account_insights.website_clicks` |
 | Conversion | Posting volume | `posts_in_period` |
+
+### Facebook Page (`meta-insights.js report monthly` → `facebook_page`)
+
+| Bucket | Metric | Source field |
+|--------|--------|-------------|
+| Awareness | Fan/follower count | `facebook_page.page.fan_count` / `.followers_count` |
+| Awareness | Page views | `facebook_page.page_insights.page_views_total` |
+| Engagement | Post engagements | `facebook_page.page_insights.page_post_engagements` |
+| Engagement | Per-post engagement | `facebook_page.posts[].engagement` (likes + comments + shares) |
+| Awareness | Video views | `facebook_page.page_insights.page_video_views` |
+
+Note: `facebook_page.posts` requires the `pages_read_engagement` permission
+on the token — if it returns an `error`, report Page-level metrics only and
+note the gap rather than fabricating post-level Facebook data.
+
+### YouTube (`youtube-insights.js report monthly`)
+
+| Bucket | Metric | Source field |
+|--------|--------|-------------|
+| Awareness | Subscriber count | `channel.subscriber_count` |
+| Awareness | Lifetime view count | `channel.view_count` |
+| Engagement | Per-video engagement | `videos[].engagement` (likes + comments) |
+| Engagement | Per-video views | `videos[].view_count` |
+| Conversion | Posting volume | `videos_in_period` |
+
+### Phase 1 manual platforms (TikTok, LinkedIn, Google Meu Negócio)
+
+Read via the `xlsx` skill per
+[manual-data-template.md](manual-data-template.md). Map each row's
+`metrica`/`valor_mes_atual`/`valor_mes_anterior` into the same Awareness /
+Engagement / Conversion buckets used above (e.g., TikTok followers →
+Awareness, TikTok likes/comments/shares → Engagement, GMB profile actions →
+Conversion) so the same MoM formula and insight-writing approach applies
+uniformly across every platform in the report.
 
 ## Month-over-Month Formula
 
@@ -91,7 +128,9 @@ the detailed breakdown. Anything inside the band is reported factually
 
 ## Content-Format Comparison
 
-Group `posts` by `media_product_type` and compare `avg_engagement_rate`
+Instagram-specific (Facebook/YouTube don't expose an equivalent format
+breakdown at this data granularity). Group `posts` by `media_product_type`
+and compare `avg_engagement_rate`
 across REELS, FEED, and STORY (when present). Call out the best- and
 worst-performing format for the period, and whether the posting mix
 (% of posts per format) matches where engagement is concentrated — a

@@ -98,7 +98,7 @@ See each skill's **Related Skills** section for the full dependency map.
 | [site-architecture](skills/site-architecture/) | When the user wants to plan, map, or restructure their website's page hierarchy, navigation, URL structure, or internal... |
 | [sms](skills/sms/) | When the user wants to plan, build, or optimize SMS or MMS marketing — including welcome flows, abandoned cart texts,... |
 | [social](skills/social/) | When the user wants help creating, scheduling, or optimizing social media content for LinkedIn, Twitter/X, Instagram,... |
-| [social-media-report](skills/social-media-report/) | When the user wants a monthly (or periodic) social media performance report for a client or brand — pulling... |
+| [social-media-report](skills/social-media-report/) | Skill privada da KGM Design e Comunicação para montar o relatório mensal (ou periódico) de social media de um cliente —... |
 | [video](skills/video/) | When the user wants to create, generate, or produce video content using AI tools or programmatic frameworks. Also use... |
 <!-- SKILLS:END -->
 
