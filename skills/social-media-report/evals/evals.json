@@ -1,0 +1,60 @@
+{
+  "skill_name": "social-media-report",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Preciso do relatório mensal de social media da conta @dracrisraposo (Instagram Business ID 17841439791988739) referente a julho de 2026, comparado com junho.",
+      "expected_output": "Should confirm the IG user ID and period before running anything. Should use tools/clis/meta-insights.js 'report monthly' for both July 2026 and June 2026 to get account data, account insights, and posts with engagement. Should compute month-over-month variation using the (current-previous)/previous formula for followers, reach, profile views, website clicks, and engagement metrics. Should apply the Awareness/Engagement/Conversion threshold framework from references/metrics-framework.md to flag notable/significant insights, citing actual numbers. Should identify top and bottom performing posts by engagement. Should ask which delivery format (PPTX+PDF, Artifact dashboard, or both) if not specified before producing the final deliverable.",
+      "assertions": [
+        "Confirms IG user ID and period before pulling data",
+        "Uses meta-insights.js report monthly for both the report month and prior month",
+        "Computes MoM variation with the correct formula, handling previous=0",
+        "Applies Awareness/Engagement/Conversion thresholds from metrics-framework.md",
+        "Cites specific numbers/deltas for every insight, not generic statements",
+        "Identifies top and bottom performing posts",
+        "Asks about delivery format before building the final report if unspecified"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Monta um dashboard rápido em Artifact com os KPIs de Instagram do último mês fechado.",
+      "expected_output": "Should default the period to the previous complete calendar month since none was specified. Should pull data via meta-insights.js report monthly (and the prior month for MoM context, since KPI deltas are core to the report). Should load the dataviz skill before building any charts, and artifact-design before writing the page. Should follow the KPI-card + section structure from references/report-template.md, adapted for a dashboard layout. Should disclose data limitations (insights lag, estimated reach, sampled per-post metrics).",
+      "assertions": [
+        "Defaults to previous complete calendar month when unspecified",
+        "Still pulls the prior period for MoM comparison",
+        "Loads dataviz skill before building charts",
+        "Loads artifact-design skill before writing the Artifact page",
+        "Follows report-template.md section structure",
+        "Discloses data limitations in the output"
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Cliente pediu pra gente mandar o relatório de agosto em PDF pra apresentação com o time de marketing deles. É pra conta que já configuramos, a Dra Cris.",
+      "expected_output": "Should recognize this as a PPTX+PDF delivery request (client presentation context implies a polished leave-behind) and proceed toward that format, or confirm if genuinely ambiguous. Should still gather/confirm the period (August) and pull two months of data for MoM. Should use the pptx skill to build the deck per report-template.md structure, then produce a PDF export. Should not fabricate account data — should pull real numbers via meta-insights.js rather than inventing plausible-looking metrics.",
+      "assertions": [
+        "Infers or confirms PPTX+PDF as the appropriate format for a client presentation",
+        "Confirms/derives the correct period (August) and pulls prior month for comparison",
+        "Uses meta-insights.js to pull real data rather than fabricating numbers",
+        "Uses the pptx skill to build the deck following report-template.md",
+        "Produces a PDF export of the deck"
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "A conta da Dra Cris não teve nenhum post no mês passado. Gera o relatório mesmo assim.",
+      "expected_output": "Should still pull data via meta-insights.js report monthly and handle the zero-posts case gracefully — posts_in_period will be 0, so top/bottom post sections should say so explicitly rather than erroring or fabricating posts. Should still report account-level metrics (followers, reach, profile views, website clicks) and their MoM variation. Should flag the lack of posting activity itself as a significant insight (likely correlated with reach/engagement decline) with a recommendation to resume posting cadence. Should handle previous-period-zero edge cases per the MoM formula rules if relevant.",
+      "assertions": [
+        "Pulls real data even when expecting a zero-post month",
+        "Handles posts_in_period=0 explicitly rather than erroring or inventing posts",
+        "Still reports account-level MoM metrics",
+        "Flags zero posting activity as a notable insight with a recommendation",
+        "Applies MoM zero-division edge case handling correctly if triggered"
+      ],
+      "files": []
+    }
+  ]
+}

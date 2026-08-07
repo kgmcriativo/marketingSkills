@@ -46,9 +46,17 @@ Current versions of all skills. Agents can compare against local versions to che
 | site-architecture | 2.0.0 | 2026-05-05 |
 | sms | 1.0.0 | 2026-05-21 |
 | social | 2.0.0 | 2026-05-05 |
+| social-media-report | 1.0.0 | 2026-08-07 |
 | video | 2.0.1 | 2026-05-18 |
 
 ## Recent Changes
+
+### 2.4.0 (2026-08-07)
+
+- Added `social-media-report` skill — turns raw Instagram/Meta account data into a client-ready monthly (or custom-period) performance report. Three-stage workflow: pull data (via the new `meta-insights.js` CLI), compute month-over-month variation and apply the Awareness/Engagement/Conversion insight-threshold framework (extending the `social` skill's metrics framework), then produce the deliverable as PPTX+PDF, an Artifact dashboard, or both. References include `metrics-framework.md` (MoM formulas, insight thresholds, cross-metric signals, top/bottom post selection, content-format comparison) and `report-template.md` (11-section report structure used for both delivery formats).
+- Added `tools/clis/meta-insights.js` — zero-dependency CLI for the Instagram Graph API (organic insights, the counterpart to `meta-ads.js`). Commands: `account get`/`account insights`, `media list`/`media insights`, and a composite `report monthly` that bundles account profile + account insights + posts-with-engagement into one payload, defaulting to the previous complete calendar month.
+- Added `tools/integrations/meta-insights.md` integration guide, and registered `meta-insights` in `tools/REGISTRY.md` and `tools/clis/README.md`.
+- Total skills: 44.
 
 ### 2.3.0 (2026-05-27)
 
