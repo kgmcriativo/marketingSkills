@@ -46,10 +46,14 @@ Current versions of all skills. Agents can compare against local versions to che
 | site-architecture | 2.0.0 | 2026-05-05 |
 | sms | 1.0.0 | 2026-05-21 |
 | social | 2.0.0 | 2026-05-05 |
-| social-media-report | 1.2.0 | 2026-08-08 |
+| social-media-report | 1.2.1 | 2026-08-08 |
 | video | 2.0.1 | 2026-05-18 |
 
 ## Recent Changes
+
+### 2.4.3 (2026-08-08)
+
+- `social-media-report` (1.2.0 → 1.2.1): fixed client-facing bugs found when actually trying to share the finished dashboard — the header still said "Prévia interna" and the footer disclaimed it as not the final client deliverable, both leftover from the internal-review phase and confusing once the link went to the client. Added a real `permalink` link ("Ver post no Instagram ↗") to every post card, fixing an unverified claim in the footer text (it said links to the real post existed when they didn't) and giving the client a way to see the real image despite the placeholder thumbnail. Also documented the Artifact-is-private-by-default behavior in the QA checklist — a published dashboard link only works for the account that published it until shared via the Artifact page's share menu, which isn't something this skill can do on its own. `assets/dashboard-skeleton.html` and `references/visual-system.md` updated so future reports don't ship the same leftover-review-language bug.
 
 ### 2.4.2 (2026-08-08)
 

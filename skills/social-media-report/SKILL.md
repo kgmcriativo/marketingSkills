@@ -2,7 +2,7 @@
 name: social-media-report
 description: "Skill privada da KGM Design e Comunicação para montar o relatório mensal (ou periódico) de social media de um cliente — puxando dados de Instagram, Facebook e YouTube, combinando com dados manuais de TikTok/LinkedIn/Google Meu Negócio, calculando variação mês a mês, gerando insights automáticos e montando o dashboard + PDF entregável. Dispare esta skill quando o usuário mencionar 'relatório mensal,' 'relatório de social media,' 'monthly report,' 'social media report,' 'relatório de Instagram,' 'performance report,' 'relatório do cliente,' ou pedir para reportar seguidores, reach, engajamento, views ou inscritos. Also use when the user asks to build or update a client's monthly social dashboard or PDF report. For content creation and strategy, see social. For raw platform data, see the meta-insights and youtube-insights CLIs in tools/clis/."
 metadata:
-  version: 1.2.0
+  version: 1.2.1
 ---
 
 # Relatório Mensal de Social Media (KGM)
@@ -305,6 +305,13 @@ Checklist antes de entregar:
       fixo), quando já existir um relatório anterior desse cliente
 - [ ] Screenshot tirado em claro, escuro e mobile antes de publicar (ver
       script em visual-system.md) — nenhum bug de layout visível
+- [ ] Nenhum texto de revisão interna ("prévia", "rascunho", "não é o
+      entregável final") sobrou no HTML antes de mandar o link pro cliente
+- [ ] Cada post em destaque tem link real pro permalink do Instagram
+      (compensa a miniatura quando ela é placeholder)
+- [ ] Se o link do dashboard for pro cliente (não só revisão interna),
+      lembrou de avisar que precisa compartilhar a página pelo menu de
+      share do Artifact — o link publicado começa privado
 - [ ] Limitações de dados listadas no rodapé
 
 ---

@@ -168,6 +168,19 @@ always explain the omission in the footer.
    wrapped text on top of itself, and the dark-mode hero blended into the
    page background because its color was too close to `--bg`. Neither was
    visible from reading the HTML/CSS source.
+5. **Strip internal-review language before the client sees the link.**
+   Building this dashboard iteratively (review → feedback → revise) left
+   "Prévia interna" in the header and "não é o entregável final" in the
+   footer — harmless during internal review, but confusing and
+   unprofessional once the same link was handed to the client. Before
+   sharing, grep the built HTML for "prévia"/"rascunho"/"draft"/"interna"
+   and remove anything that shouldn't be client-facing.
+6. **Every post card gets a link to the real post, thumbnail or not.**
+   Added `.post-card-link` (the post's `permalink`) after realizing the
+   footer note claimed "links to the real post" while the cards had no
+   actual link — an unverified claim in the deliverable itself. It's also
+   the cheapest way to compensate for a placeholder thumbnail: the client
+   can always click through and see the real image on Instagram.
 
 ## How to screenshot for QA
 

@@ -360,6 +360,8 @@
   .post-card-metrics { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; font-weight: 600; margin-bottom: 10px; }
   .post-card-metrics .u { font-weight: 400; color: var(--ink-muted); font-size: 11px; margin-left: 2px; }
   .post-card-why { font-size: 12px; color: var(--ink-muted); line-height: 1.5; padding-top: 10px; border-top: 1px solid var(--border); }
+  .post-card-link { display: inline-flex; align-items: center; gap: 4px; margin-top: 10px; font-size: 12px; font-weight: 600; color: var(--accent); text-decoration: none; }
+  .post-card-link:hover { text-decoration: underline; }
 
   .test-note {
     background: var(--surface-alt);
@@ -399,7 +401,13 @@
 
   <div class="hero">
     <div class="hero-top">
-      <span>Relatório de Social Media &middot; {{Rascunho ou em branco}}</span>
+      <!-- If this is a work-in-progress being reviewed internally before
+           the client sees it, add "&middot; Rascunho interno" here — but
+           strip it (and any other internal-only language, e.g. in the
+           footer limitations) before this goes to the client. A dashboard
+           that still says "prévia"/"rascunho" when the client opens the
+           link reads as unfinished, even if the data is final. -->
+      <span>Relatório de Social Media</span>
       <span class="kgm">KGM Design e Comunicação</span>
     </div>
     <p class="hero-client">Instagram de <strong>{{Nome do Cliente}}</strong> (@{{handle}}) &middot; {{Mês Ano}} &middot; comparado a {{mês anterior}} e a {{mesmo mês, ano anterior}}</p>
@@ -535,6 +543,10 @@
             <span>{{comments}}<span class="u">coment.</span></span>
           </div>
           <p class="post-card-why">{{por que funcionou, com número real}}</p>
+          <!-- Always include this, thumbnail or not — it's the cheapest
+               compensation for a placeholder thumbnail, and worth having
+               even with a real image. -->
+          <a class="post-card-link" href="{{permalink real do post}}" target="_blank" rel="noopener">Ver post no Instagram ↗</a>
         </div>
       </div>
     </div>
