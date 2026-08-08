@@ -46,10 +46,14 @@ Current versions of all skills. Agents can compare against local versions to che
 | site-architecture | 2.0.0 | 2026-05-05 |
 | sms | 1.0.0 | 2026-05-21 |
 | social | 2.0.0 | 2026-05-05 |
-| social-media-report | 1.0.0 | 2026-08-07 |
+| social-media-report | 1.1.0 | 2026-08-08 |
 | video | 2.0.1 | 2026-05-18 |
 
 ## Recent Changes
+
+### 2.4.1 (2026-08-08)
+
+- `social-media-report` (1.0.0 → 1.1.0): formalized decisions and lessons from building a real client dashboard (Dra Cris Raposo, July 2026) end to end against live APIs. Year-over-year (same calendar month, prior year) is now a standard comparison alongside MoM everywhere — never show only the flattering one. Added a standard Anúncios (Meta Ads) section via `meta-ads.js`, including the rule to distinguish "no ad account" from "account exists but the token lacks `ads_read`/`ads_management`" (confirmed different Graph API error messages), and to cross-check any anomalously low-engagement organic post against Ads campaigns before calling it a test/outlier — a real post assumed to be a "test" turned out to be a boosted campaign with real paid results. Report copy now mandated in Portuguese (Alcance, not Reach) with a unit + one-line explainer required under every number. Added `assets/dashboard-skeleton.html` (the validated hero + KPI-tile + comparison-table + post-card + insight-card visual system, screenshot-QA'd in light/dark/mobile), `assets/build-dashboard.js` (font-injection build script), `assets/fonts/*.b64` (Fraunces + IBM Plex Sans embedded as base64 woff2, fetched via the Google Fonts CSS2 API), and `references/visual-system.md` (design tokens, the font fetch/embed recipe, the CDN-hotlinking constraint for post thumbnails, and a Playwright/Chromium screenshot recipe for pre-publish QA). Rewrote `report-template.md` to match the actual validated section structure (hero → panorama → 3-period comparison table → engagement → format → posts → Facebook → Ads → YouTube → Fase 1 → insights → footer) and extended `metrics-framework.md` with YoY formulas, the Meta Ads data source/thresholds, and the followers-is-a-snapshot-not-a-time-series caveat.
 
 ### 2.4.0 (2026-08-07)
 

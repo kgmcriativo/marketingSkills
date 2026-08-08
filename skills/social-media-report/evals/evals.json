@@ -4,15 +4,18 @@
     {
       "id": 1,
       "prompt": "Preciso do relatório mensal de social media da Dra Cris Raposo (Instagram Business ID 17841439791988739, Page ID 286423904550638) referente a julho de 2026, comparado com junho.",
-      "expected_output": "Should confirm the accounts/IDs and period before running anything. Should use tools/clis/meta-insights.js 'report monthly' for both July 2026 and June 2026 to get Instagram account data, account insights, Facebook Page data (via the automatic facebook_page section), and posts with engagement. Should compute month-over-month variation using the (current-previous)/previous formula. Should apply the Awareness/Engagement/Conversion threshold framework from references/metrics-framework.md to flag notable/significant insights, citing actual numbers, across both Instagram and Facebook. Should identify top and bottom performing Instagram posts. Should produce the output as a Dashboard Artifact (fixed link) plus a condensed PDF, per the closed scope decision — not a PPTX.",
+      "expected_output": "Should confirm the accounts/IDs and period before running anything. Should use tools/clis/meta-insights.js 'report monthly' for July 2026, June 2026 (MoM), AND July 2025 (YoY, the standard second comparison even though the user only asked for 'comparado com junho') to get Instagram account data, account insights, Facebook Page data (via the automatic facebook_page section), and posts with engagement. Should also check for an accessible Meta Ads account via meta-ads.js even though the user didn't mention ads. Should compute both MoM and YoY variation using the (current-previous)/previous formula, showing both even if one is unflattering. Should apply the Awareness/Engagement/Conversion threshold framework from references/metrics-framework.md to flag notable/significant insights, citing actual numbers, across Instagram, Facebook, and Ads. Should identify top and bottom performing Instagram posts, cross-checking any anomalous ones against Ads data before calling them a test/outlier. Should use Portuguese terminology (Alcance, not Reach). Should produce the output as a Dashboard Artifact (fixed link) plus a condensed PDF, per the closed scope decision — not a PPTX.",
       "assertions": [
         "Confirms IG user ID, Page ID, and period before pulling data",
-        "Uses meta-insights.js report monthly for both the report month and prior month",
+        "Pulls three periods: report month, prior month (MoM), and same month prior year (YoY) — not just MoM",
+        "Checks for a Meta Ads account even though the user didn't ask about ads",
         "Includes Facebook Page data (facebook_page section) alongside Instagram",
-        "Computes MoM variation with the correct formula, handling previous=0",
+        "Computes both MoM and YoY variation with the correct formula, handling previous=0",
+        "Shows YoY even if it's less flattering than MoM, not just the better-looking comparison",
         "Applies Awareness/Engagement/Conversion thresholds from metrics-framework.md",
         "Cites specific numbers/deltas for every insight, not generic statements",
         "Identifies top and bottom performing Instagram posts",
+        "Uses Portuguese report terminology (Alcance, not Reach)",
         "Produces Dashboard + PDF, does not produce a PPTX"
       ],
       "files": []
@@ -68,6 +71,30 @@
         "Applies the same MoM formula to manual-platform metrics as automated ones",
         "Clearly labels the manual data section as separate from automated data",
         "Omits Google Meu Negócio (no data provided) instead of reporting zeros"
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "meta-ads.js accounts list não retornou nenhuma conta pra Dra Cris. Ela não roda anúncios?",
+      "expected_output": "Should not conclude 'no ads account' from an empty accounts list alone. Should check whether the gap is genuinely no account, or an account that exists but the token lacks ads_read/ads_management for — e.g. by checking /{business-id}/owned_ad_accounts and looking for the specific 'Ad account owner has NOT grant ads_management or ads_read permission' error, which indicates the account exists. Should report the two situations differently in the dashboard's Ads section text (per SKILL.md Etapa 2 and metrics-framework.md's Meta Ads data source section) — 'no account connected' is a different message from 'account exists, missing permission'.",
+      "assertions": [
+        "Does not immediately conclude 'no ads account' from an empty accounts list",
+        "Checks /{business-id}/owned_ad_accounts or equivalent to distinguish the two cases",
+        "Recognizes the specific 'NOT grant ads_management or ads_read permission' error as evidence the account exists",
+        "Reports the correct distinct message (no account vs. account exists but missing permission)"
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "Publica o dashboard atualizado da Dra Cris pra esse mês.",
+      "expected_output": "Should start from assets/dashboard-skeleton.html (not rebuild the visual system from scratch) per SKILL.md's 'Sistema visual' section, fill in the client's real data per report-template.md, and run assets/build-dashboard.js to inject the embedded fonts before publishing. Should take screenshots (light, dark, mobile) using the approach in references/visual-system.md and actually look at them before publishing — not just read the HTML/CSS source — since real bugs (mobile header wrap, dark-mode hero blending into the background) were only caught this way historically. Should publish to a stable file_path so the link matches prior months.",
+      "assertions": [
+        "Starts from assets/dashboard-skeleton.html instead of rebuilding the design system from scratch",
+        "Runs assets/build-dashboard.js to inject fonts before publishing",
+        "Takes and reviews screenshots in light, dark, and mobile before publishing",
+        "Publishes to a stable file_path/URL matching the client's prior dashboard"
       ],
       "files": []
     }
