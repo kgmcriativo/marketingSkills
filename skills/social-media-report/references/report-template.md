@@ -174,3 +174,19 @@ Hero → 01 Panorama → 02 Comparativo (3 períodos) → the single biggest
 insight from 10 (2-3 sentences, not the full card). Drop 03-09 and the full
 footer; keep one line crediting KGM Design e Comunicação and the data
 period.
+
+**Implementation**: copy
+[assets/pdf-resumido-template.py](../assets/pdf-resumido-template.py) (uses
+`reportlab`; `pip install reportlab` if not already available), fill in
+the `REPORT` config block at the top with real data, run
+`python pdf-resumido-template.py output.pdf`. Same color tokens as
+`assets/dashboard-skeleton.html` so the two deliverables read as one
+system. **Leave `mom`/`yoy` as `""` for any metric with no real
+comparison** (e.g. followers) — the template renders "sem comparação
+histórica" instead of a delta in that case; a naive implementation showed
+a false "▼" (down arrow) for an empty string during this skill's own
+build, which is exactly the kind of misleading number the skill exists to
+prevent. Render and look at the PDF (pymupdf snippet in the template's
+docstring) before sending — check it fits the intended 1-2 pages; if
+content overflows to an extra page with just the footer on it, tighten
+`Spacer`/padding values rather than shipping the overflow.

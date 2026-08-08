@@ -2,7 +2,7 @@
 name: social-media-report
 description: "Skill privada da KGM Design e Comunicação para montar o relatório mensal (ou periódico) de social media de um cliente — puxando dados de Instagram, Facebook e YouTube, combinando com dados manuais de TikTok/LinkedIn/Google Meu Negócio, calculando variação mês a mês, gerando insights automáticos e montando o dashboard + PDF entregável. Dispare esta skill quando o usuário mencionar 'relatório mensal,' 'relatório de social media,' 'monthly report,' 'social media report,' 'relatório de Instagram,' 'performance report,' 'relatório do cliente,' ou pedir para reportar seguidores, reach, engajamento, views ou inscritos. Also use when the user asks to build or update a client's monthly social dashboard or PDF report. For content creation and strategy, see social. For raw platform data, see the meta-insights and youtube-insights CLIs in tools/clis/."
 metadata:
-  version: 1.1.0
+  version: 1.2.0
 ---
 
 # Relatório Mensal de Social Media (KGM)
@@ -193,7 +193,12 @@ métrica e o delta por trás.
   `dataviz` antes de montar qualquer gráfico, e `artifact-design` antes de
   escrever a página.
 - **PDF resumido** — versão condensada (1-2 páginas) com o resumo executivo
-  e os KPIs principais, para envio direto ao cliente. Use a skill `pdf`.
+  e os KPIs principais, para envio direto ao cliente. Copie
+  [assets/pdf-resumido-template.py](assets/pdf-resumido-template.py)
+  (`reportlab`), preencha o bloco `REPORT` com os dados reais, rode. Ver
+  [references/report-template.md](references/report-template.md) "PDF
+  resumido — what to keep" pro que entra em cada seção. Renderize e olhe o
+  resultado antes de enviar (script no docstring do template).
 - **Sem PPTX** — não gere apresentação PPTX para este fluxo.
 
 ### Sistema visual (não reconstruir do zero)

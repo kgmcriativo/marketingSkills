@@ -46,10 +46,14 @@ Current versions of all skills. Agents can compare against local versions to che
 | site-architecture | 2.0.0 | 2026-05-05 |
 | sms | 1.0.0 | 2026-05-21 |
 | social | 2.0.0 | 2026-05-05 |
-| social-media-report | 1.1.0 | 2026-08-08 |
+| social-media-report | 1.2.0 | 2026-08-08 |
 | video | 2.0.1 | 2026-05-18 |
 
 ## Recent Changes
+
+### 2.4.2 (2026-08-08)
+
+- `social-media-report` (1.1.0 → 1.2.0): added `assets/pdf-resumido-template.py`, completing the Dashboard+PDF deliverable pair the skill has mandated since its first version. A `reportlab`-based template (config block + rendering code separated, matching the dashboard's exact color tokens) producing the condensed 1-2 page PDF (hero, panorama KPIs, 3-period MoM/YoY comparison table, single biggest insight). Verified against the skill's own reference client (Dra Cris Raposo, July 2026): renders to a single page, and the config-driven version was checked pixel-for-pixel against the hand-built original. Caught and fixed a real bug during that verification — a KPI tile with no MoM/YoY comparison (followers, snapshot-only) was rendering a false "▼" down-arrow instead of "sem comparação histórica"; the template now handles the empty-comparison case explicitly rather than defaulting to a misleading delta. `report-template.md` and `SKILL.md` updated to reference the template instead of a generic "use the pdf skill" pointer.
 
 ### 2.4.1 (2026-08-08)
 
