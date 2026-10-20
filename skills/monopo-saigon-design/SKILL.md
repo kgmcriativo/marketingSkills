@@ -2,7 +2,7 @@
 name: monopo-saigon-design
 description: Sistema de design "Monopo Saigon" (editorial monocromático sobre luz líquida iridescente) como fonte de verdade visual para criar sites novos. Use sempre que o usuário pedir para criar, redesenhar ou estilizar um site, landing page, página institucional, portfólio ou componente de UI, ou disser "usar o design.md", "no estilo Monopo", "editorial minimalista", "hero iridescente", "pill ghost button". Impede decisões visuais genéricas (sombras, cantos arredondados médios, cores de acento, gradientes em botões, pesos bold em títulos grandes) e traz checklist de validação. For copy and conversion, see copywriting and page-cro.
 metadata:
-  version: 1.1.0
+  version: 1.2.0
   source: references/DESIGN.md
 ---
 
@@ -36,6 +36,19 @@ O `DESIGN.md` é uma extração automática: ele marca "Theme: light" e lista 22
 | Cookie banner opcional | Existe no original; omita se o site não rastreia |
 
 Também no original: rótulos de seção com seta (`→ Selected project`, 11px/600), bloco de marcas em texto centralizado (14px) com um pill ghost abaixo, rodapé de 3 colunas em 11px cinza, container de **1080px** (margem de 180px em 1440px).
+
+### Movimento do original (o que faz o site "ficar vivo")
+
+Um site só com CSS fica estático perto do original. Estes seis comportamentos são obrigatórios; sem eles, o resultado parece "no estilo", mas não se move como o monopo:
+
+1. **Hero em WebGL, não em CSS.** Fluido contínuo (fbm com domain warping, paleta musgo/tan/creme) + lente de vidro com refração e borda clara + grão. Reage ao mouse (redemoinho suave) e à rolagem. Use `assets/hero-fluid-webgl.js` (canvas `#hero-gl` dentro de `.hero`). Mantenha blobs CSS apenas como fallback sem WebGL. Pause fora da viewport.
+2. **Rolagem suave com inércia** (Lenis `1.1.18`, `lerp ≈ 0.085`), incluindo âncoras com `scrollTo` de ~1.6s.
+3. **Distorção por velocidade de rolagem**: textos e imagens recebem `skewY` e leve `scaleX` proporcionais à velocidade e voltam a zero ao parar (variáveis `--sk`, `--st`).
+4. **Cursor customizado**: círculo branco 52px com seta ↗, seguindo o mouse com atraso (lerp ~0.18); cresce para ~84px sobre links/projetos. Só em `hover:hover` e `pointer:fine`.
+5. **Frases do hero rotativas** (troca a cada ~4s, 1.25s de transição) e que somem com a rolagem; manifesto que acende palavra por palavra; marquee gigante em loop linear lento.
+6. **Respeitar `prefers-reduced-motion`**: sem Lenis, sem rotação, shader em quadro fixo.
+
+Valide **em movimento**: grave ou capture 2+ quadros do hero em instantes diferentes e confirme que mudam; confirme que `--sk` sai de 0 durante a rolagem.
 
 ### Processo para ficar fiel (obrigatório em sites novos)
 
@@ -281,6 +294,7 @@ Marque cada item antes de entregar; qualquer "não" é bloqueante.
 **Movimento**
 - [ ] Curva `cubic-bezier(0.19,1,0.22,1)`; transforms 0.8–1.25s; micro `ease` 0.4s.
 - [ ] Animação por `transform`/`opacity`; `prefers-reduced-motion` respeitado.
+- [ ] Hero em WebGL animado (2 quadros distintos), Lenis ativo, skew por velocidade, cursor customizado.
 
 **Qualidade geral**
 - [ ] Contraste AA em todo texto; foco visível sem cor.
@@ -291,4 +305,5 @@ Marque cada item antes de entregar; qualquer "não" é bloqueante.
 ## Arquivos de apoio
 
 - `references/DESIGN.md`: documento original (fonte de verdade).
-- `references/tokens.css`: tokens CSS/Tailwind v4 prontos, já corrigidos conforme as resoluções acima.
+- `references/tokens.css`: tokens CSS prontos, no tema escuro do site real.
+- `assets/hero-fluid-webgl.js`: shader do hero (fluido + lente de vidro), pronto para usar com `<canvas id="hero-gl">` dentro de `.hero`.
