@@ -30,7 +30,7 @@
   --text-body: 16px;      --leading-body: 1.21;
   --text-lead: 28.5px;    --leading-lead: 1.4;     /* peso 300 */
   --text-statement: clamp(26px, 2.5vw, 34px);  --leading-statement: 1.08;
-  --text-hero: clamp(30px, 3.4vw, 49px);       --leading-hero: 1.1;
+  --text-hero: clamp(30px, 3.4vw, 80px);       --leading-hero: 1.1;
   --text-display: clamp(110px, 15.6vw, 225px); --leading-display: 1.25; /* só o marquee */
   --font-weight-light: 300;
   --font-weight-regular: 400;

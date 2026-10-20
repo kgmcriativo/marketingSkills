@@ -2,7 +2,7 @@
 name: monopo-saigon-design
 description: Sistema de design "Monopo Saigon" (editorial monocromático sobre luz líquida iridescente) como fonte de verdade visual para criar sites novos. Use sempre que o usuário pedir para criar, redesenhar ou estilizar um site, landing page, página institucional, portfólio ou componente de UI, ou disser "usar o design.md", "no estilo Monopo", "editorial minimalista", "hero iridescente", "pill ghost button". Impede decisões visuais genéricas (sombras, cantos arredondados médios, cores de acento, gradientes em botões, pesos bold em títulos grandes) e traz checklist de validação. For copy and conversion, see copywriting and page-cro.
 metadata:
-  version: 1.2.0
+  version: 1.3.0
   source: references/DESIGN.md
 ---
 
@@ -31,11 +31,33 @@ O `DESIGN.md` é uma extração automática: ele marca "Theme: light" e lista 22
 | Gradiente verde → âmbar → oxblood vivo | Hero **escuro e granulado**: verde-musgo (`rgb(46,62,42)`), tan/dourado (`rgb(196,152,84)`), preto; **grão** forte e uma **esfera de vidro** com borda fina clara. Cores dessaturadas, nunca neon |
 | Lista de projetos em coluna única | **Duas colunas escalonadas** (a da direita desce ~130px), imagens retrato 3:4, título 12px a 55% de branco e tags 10px a 32% embaixo |
 | Menu em linha | Menu **empilhado na vertical, alinhado à direita**, 11px caixa-alta a 55% de opacidade; logo à esquerda; seletor de idioma ao centro |
-| Manifesto em 78px/300 | Texto de **~32px/400** que **acende palavra por palavra** com a rolagem (cinza 32% → branco), seguido de linhas com fio de 1px (rótulo 9px à esquerda, parágrafo 14px à direita) |
+| Manifesto em 78px/300 | Texto de **6,56vw/400 (94px a 1440)** em linhas fixas, com **máscara que desliza linha a linha** (veja abaixo), seguido de linhas com fio de 1px (rótulo 9px à esquerda, parágrafo 14px à direita) |
 | Lead em destaque | Parágrafos de apoio em **28,5px/300** |
 | Cookie banner opcional | Existe no original; omita se o site não rastreia |
 
 Também no original: rótulos de seção com seta (`→ Selected project`, 11px/600), bloco de marcas em texto centralizado (14px) com um pill ghost abaixo, rodapé de 3 colunas em 11px cinza, container de **1080px** (margem de 180px em 1440px).
+
+### Medidas exatas do original (extraídas do CSS computado do monopo.vn)
+
+**Tudo é dimensionado em `vw`, com 1440px = 1:1.** Em 1920px o manifesto vira 126px e o marquee 300px. Os "px" do `DESIGN.md` valem só para 1440. Nunca fixe esses tamanhos em px no CSS; use `vw` (ou `calc(100vw / 1440 * N)`). Corpo, botões e inputs ficam fixos em 16/18px.
+
+| Elemento | Desktop | Mobile |
+|---|---|---|
+| Container | gutter 12.5vw (75vw de conteúdo) | gutter 6.67vw |
+| Hero (frases) | 3.4vw / 1.1 | |
+| **Manifesto** | **6,56vw, entrelinha 5vw (0,76), peso 400**, margem-topo 7.66vw; cada linha `overflow:hidden`, altura 7.6vw | 10.67vw |
+| Texto de apoio / citação / lead | 1.98vw / 2.76vw, **peso 300** | 4.27vw / 7.47vw |
+| Marcas ("They trust us") | **2.5vw / 3.49vw**, palavras com vírgula que surgem em sequência (fade + translateY 40%, atraso 0.12s entre elas); bloco 59.38vw centralizado | 5.87vw |
+| Intro de seção ("team") | 5.42vw / 5.94vw, peso 300; entra com opacity 0→1 (0.4s linear) + translateY 20%→0 (0.8s ease-signature) | 10.67vw |
+| Marquee final | **15.63vw** | |
+| Rótulos / labels | 0.63vw, 0.73vw, 0.83vw | |
+| Espaçamentos de seção | ≈10.5vw; gap de colunas 4.5vw | |
+
+**Máscara do manifesto (não é "palavra por palavra")**: o texto é quebrado em **linhas fixas**. Cada linha é `.line > .content(overflow hidden) > span + .mask`. A `.mask` é um retângulo **preto, 65% de opacidade**, cobrindo 100% da linha (`transform-origin: 100% 50%`, altura 115%). Quando a linha entra a **20% da base da viewport**, a máscara faz `scaleX(1 → 0)` (1.25–1.6s, ease-signature), revelando o texto da esquerda para a direita; o texto "apagado" é branco a 35%. Linhas que entram juntas ganham atraso de ~0.09s. Veja `assets/scroll-interactions.js`.
+
+**Cursor (pequeno)**: por padrão um **ponto branco de ~0.75vw (≈11px)**, não um círculo grande. Sobre links e projetos vira um círculo (~3.4vw) com a seta ↗ (0.8s ease-signature). O ponto estica levemente na direção do movimento. Em fundo branco o ponto fica preto. Um círculo "Play" de 7.19vw existe só sobre vídeos.
+
+**Rolagem (Locomotive Scroll no original; Lenis é a alternativa usada aqui)**: parallax por elemento com velocidades diferentes (ex.: colunas de projetos em +0.6 e -0.2, citação -0.25, textos de intro até -2), seções com `data-scroll-call` que mudam estado, grade rotacionada a 45° com linhas que correm na horizontal (`data-scroll-direction=horizontal`, só quando há muitas imagens) e marquee cuja velocidade e sentido seguem a rolagem.
 
 ### Movimento do original (o que faz o site "ficar vivo")
 
@@ -44,7 +66,7 @@ Um site só com CSS fica estático perto do original. Estes seis comportamentos 
 1. **Hero em WebGL, não em CSS.** Fluido contínuo (fbm com domain warping, paleta musgo/tan/creme) + lente de vidro com refração e borda clara + grão. Reage ao mouse (redemoinho suave) e à rolagem. Use `assets/hero-fluid-webgl.js` (canvas `#hero-gl` dentro de `.hero`). Mantenha blobs CSS apenas como fallback sem WebGL. Pause fora da viewport.
 2. **Rolagem suave com inércia** (Lenis `1.1.18`, `lerp ≈ 0.085`), incluindo âncoras com `scrollTo` de ~1.6s.
 3. **Distorção por velocidade de rolagem**: textos e imagens recebem `skewY` e leve `scaleX` proporcionais à velocidade e voltam a zero ao parar (variáveis `--sk`, `--st`).
-4. **Cursor customizado**: círculo branco 52px com seta ↗, seguindo o mouse com atraso (lerp ~0.18); cresce para ~84px sobre links/projetos. Só em `hover:hover` e `pointer:fine`.
+4. **Cursor customizado**: ponto branco de ~0.75vw seguindo o mouse com atraso (lerp ~0.2); vira círculo de ~3.4vw com ↗ sobre links/projetos. Só em `hover:hover` e `pointer:fine`.
 5. **Frases do hero rotativas** (troca a cada ~4s, 1.25s de transição) e que somem com a rolagem; manifesto que acende palavra por palavra; marquee gigante em loop linear lento.
 6. **Respeitar `prefers-reduced-motion`**: sem Lenis, sem rotação, shader em quadro fixo.
 
@@ -207,7 +229,7 @@ Regras:
 
 1. **Header** transparente fixo (66px).
 2. **Hero** full-bleed: mídia iridescente + headline display único + scroll indicator inferior-esquerdo (+ opcionalmente 1 Ghost Pill escuro, somente se o brief exigir; o headline não leva CTA colado).
-3. **Manifesto**: texto de ~32px que acende palavra por palavra, seguido de linhas com fio de 1px.
+3. **Manifesto**: texto de 6,56vw em linhas fixas com máscara deslizante, seguido de linhas com fio de 1px.
 4. **Trabalhos**: duas colunas escalonadas, imagem + título + tags.
 5. **Faixa preta inversa** com afirmação 94px/400/0.76 (opcional).
 6. **Blocos assimétricos** texto/imagem alternados, gap de seção 46px (ou 152px para respiro maior).
@@ -266,7 +288,7 @@ Marque cada item antes de entregar; qualquer "não" é bloqueante.
 
 **Tipografia**
 - [ ] Roobert (ou Inter/Söhne) em tudo; Raleway ausente ou restrito a um título acento.
-- [ ] Hero ~48px/400; 225px apenas no marquee; lead 28,5px/300; manifesto ~32px/400.
+- [ ] Hero ~48px/400; 225px apenas no marquee; lead 28,5px/300; manifesto 6,56vw/400 (entrelinha 5vw).
 - [ ] Nenhum peso ≥ 600 acima de 45px.
 - [ ] `letter-spacing: 0` fora do hover do botão.
 - [ ] Corpo/listas/endereços alinhados à esquerda.
@@ -294,7 +316,9 @@ Marque cada item antes de entregar; qualquer "não" é bloqueante.
 **Movimento**
 - [ ] Curva `cubic-bezier(0.19,1,0.22,1)`; transforms 0.8–1.25s; micro `ease` 0.4s.
 - [ ] Animação por `transform`/`opacity`; `prefers-reduced-motion` respeitado.
-- [ ] Hero em WebGL animado (2 quadros distintos), Lenis ativo, skew por velocidade, cursor customizado.
+- [ ] Hero em WebGL animado (2 quadros distintos), Lenis ativo, skew por velocidade, parallax e marquee ligados à rolagem.
+- [ ] Tamanhos em `vw` (manifesto 6,56vw, marquee 15,63vw, marcas 2,5vw); cursor padrão é um ponto de ~11px.
+- [ ] Manifesto com máscara por linha (65% preto, scaleX 1→0), não por palavra.
 
 **Qualidade geral**
 - [ ] Contraste AA em todo texto; foco visível sem cor.
@@ -306,4 +330,5 @@ Marque cada item antes de entregar; qualquer "não" é bloqueante.
 
 - `references/DESIGN.md`: documento original (fonte de verdade).
 - `references/tokens.css`: tokens CSS prontos, no tema escuro do site real.
+- `assets/scroll-interactions.js`: máscara do manifesto, Lenis, parallax, marquee atrelado à rolagem e cursor.
 - `assets/hero-fluid-webgl.js`: shader do hero (fluido + lente de vidro), pronto para usar com `<canvas id="hero-gl">` dentro de `.hero`.
