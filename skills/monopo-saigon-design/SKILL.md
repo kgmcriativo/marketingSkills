@@ -2,7 +2,7 @@
 name: monopo-saigon-design
 description: Sistema de design "Monopo Saigon" (editorial monocromático sobre luz líquida iridescente) como fonte de verdade visual para criar sites novos. Use sempre que o usuário pedir para criar, redesenhar ou estilizar um site, landing page, página institucional, portfólio ou componente de UI, ou disser "usar o design.md", "no estilo Monopo", "editorial minimalista", "hero iridescente", "pill ghost button". Impede decisões visuais genéricas (sombras, cantos arredondados médios, cores de acento, gradientes em botões, pesos bold em títulos grandes) e traz checklist de validação. For copy and conversion, see copywriting and page-cro.
 metadata:
-  version: 1.0.0
+  version: 1.1.0
   source: references/DESIGN.md
 ---
 
@@ -19,6 +19,31 @@ Você é um diretor de arte executando um sistema de design fechado. **`referenc
 3. Monte a página pelo "Esqueleto de página" abaixo.
 4. Ao terminar, rode a "Checklist de validação" e corrija cada falha antes de entregar.
 5. Em dúvida, escolha a opção **mais contida**. Este sistema é definido por aquilo que *não* faz.
+
+## Fidelidade ao site real (leia antes de tudo)
+
+O `DESIGN.md` é uma extração automática: ele marca "Theme: light" e lista 225px como tamanho do hero. **Medido no monopo.vn de verdade, isso está errado.** Um site que seguir só o texto do `DESIGN.md` sai "no estilo", mas fica diferente do original. Corrija assim:
+
+| O `DESIGN.md` sugere | O site real faz |
+|---|---|
+| Canvas branco, faixas alternando branco/preto | **Página inteira preta** (`#000`); texto branco. Branco puro só como cor de texto |
+| Hero com headline de 225px | Hero com frases de **~48px/400**, centradas, que **rotacionam** devagar; o "i" de cada palavra em *itálico*. Os **225px são do marquee gigante** do fim da página ("Discover Saigon Souls") |
+| Gradiente verde → âmbar → oxblood vivo | Hero **escuro e granulado**: verde-musgo (`rgb(46,62,42)`), tan/dourado (`rgb(196,152,84)`), preto; **grão** forte e uma **esfera de vidro** com borda fina clara. Cores dessaturadas, nunca neon |
+| Lista de projetos em coluna única | **Duas colunas escalonadas** (a da direita desce ~130px), imagens retrato 3:4, título 12px a 55% de branco e tags 10px a 32% embaixo |
+| Menu em linha | Menu **empilhado na vertical, alinhado à direita**, 11px caixa-alta a 55% de opacidade; logo à esquerda; seletor de idioma ao centro |
+| Manifesto em 78px/300 | Texto de **~32px/400** que **acende palavra por palavra** com a rolagem (cinza 32% → branco), seguido de linhas com fio de 1px (rótulo 9px à esquerda, parágrafo 14px à direita) |
+| Lead em destaque | Parágrafos de apoio em **28,5px/300** |
+| Cookie banner opcional | Existe no original; omita se o site não rastreia |
+
+Também no original: rótulos de seção com seta (`→ Selected project`, 11px/600), bloco de marcas em texto centralizado (14px) com um pill ghost abaixo, rodapé de 3 colunas em 11px cinza, container de **1080px** (margem de 180px em 1440px).
+
+### Processo para ficar fiel (obrigatório em sites novos)
+
+1. **Capture screenshots da referência** (Chromium/Playwright em 1440×900; rode com `mouse.wheel`, pois o site hijacka a rolagem) e olhe cada seção. Nunca derive layout só do `DESIGN.md`.
+2. Leia estilos computados dos elementos-chave (`font-size`, `font-weight`, cor) em vez de confiar nos números do `DESIGN.md`.
+3. Monte a página por seção, comparando lado a lado com os screenshots.
+4. Reuse **estrutura, ritmo, escala e movimento**; troque conteúdo e marca. Não copie texto, logo, nome nem imagens.
+5. Quanto mais contexto visual (screenshots, logo, identidade, briefing), menos a IA inventa.
 
 ## O princípio central
 
@@ -44,7 +69,7 @@ Um único gesto expressivo (o hero iridescente + botões pill) cercado de **disc
 | Token | Valor | Uso permitido |
 |---|---|---|
 | `--color-obsidian` | `#000000` | Texto primário, bordas em superfície clara, traços SVG, seções inversas |
-| `--color-paper` | `#ffffff` | Canvas principal; texto sobre fundo escuro. **Nunca** como cor de CTA primário |
+| `--color-paper` | `#ffffff` | Cor do texto sobre o fundo preto (e canvas, se o projeto pedir tema claro). **Nunca** como cor de CTA primário |
 | `--color-inkstone` | `#181818` | Texto longo de rodapé e subtítulos secundários |
 | `--color-felt-gray` | `#6d6d6d` | Texto auxiliar: endereço, legal, anotações |
 | `--color-slate-pill` | `#636363` | Único preenchimento sólido de ação (consentimento/Accept) |
@@ -82,7 +107,8 @@ Escala (peso/entrelinha conforme o papel):
 | heading-sm | 54px | 400 | 1.39 | (Raleway opcional) |
 | heading | 78px | **300** | 1.10 | manifesto, seções atmosféricas ("peso sussurro") |
 | heading-lg | 94px | 400 | **0.76** | afirmações densas, "objeto de arte" |
-| display | 225px | 400 | **0.70–0.76** | headline do hero |
+| display | 225px | 400 | **0.70–0.76** | marquee gigante de fechamento (não o hero) |
+| hero-phrase | ~48px | 400 | 1.1 | frases rotativas do hero |
 
 Regras:
 - `letter-spacing: 0` em tudo (a única exceção é a animação de hover do botão).
@@ -97,9 +123,9 @@ Regras:
 - Unidade base **4px**. Densidade **espaçosa**.
 - Escala: `8 · 12 · 28 · 40 · 48 · 64 · 68 · 152`. Gap de elemento **14px**, gap de seção **46px**, padding de card **34px**.
 - Container: **max-width 1078px**, centrado. Só o hero e as faixas escuras quebram o container (full-bleed).
-- Faixas alternam **branco ↔ preto** (texto branco no preto).
+- Fundo **preto** em toda a página (o hero escurece até `#000` na base). Superfícies claras só se o projeto pedir tema claro.
 - Composição **assimétrica**: texto-esq/imagem-dir alternando. Nada de pilhas centralizadas fora do hero.
-- Lista de projetos: **coluna única**, uma imagem por linha, largura total do container, título abaixo. **Sem grade multicoluna de cards.**
+- Projetos: **duas colunas escalonadas** de imagens retrato, sem chrome de card. Sem grades uniformes de 3+ colunas.
 - Rodapé: três colunas compactas de endereço (ex.: Tokyo, Saigon, London) em 11px `#6d6d6d`, 8px entre linhas, sem divisórias nem rótulos.
 
 ### 4. Forma e superfície
@@ -124,11 +150,11 @@ Regras:
 
 **Link de texto**: sem fundo, sem borda, raio 0, **sem sublinhado**. Roobert 12–16px/400; cor alterna `#fff`/`#000` conforme a superfície.
 
-**Hero Display Headline**: Roobert 225px/400, entrelinha 0.70–0.76, `#fff` sobre mídia iridescente. Frase única, centralizada na viewport. Sem subtítulo e sem CTA.
+**Hero**: frase de ~48px/400, entrelinha 1.1, `#fff`, centralizada, rotacionando devagar entre 2–3 frases (translate+opacity, 1.25s), "i" em itálico. Sem subtítulo e sem CTA. **Marquee de fechamento**: texto de 225px/400 deslizando em loop linear lento.
 
 **Section Heading (Whisper)**: 78px/300/1.10. **Section Heading (Anchor)**: 94px/400/0.76.
 
-**Project Card / List Row**: fundo transparente, raio 0, sem sombra, sem borda, sem padding envolvente. Imagem na largura do container; título 16–18px/400 abaixo; gap 14–46px entre linhas.
+**Project Card**: fundo transparente, raio 0, sem sombra, sem borda. Duas colunas escalonadas (a direita deslocada ~130px), imagem retrato 3:4, título 12px a 55% e tags 10px a 32% abaixo; gap vertical 68px.
 
 **Language Switcher**: três links inline (EN / VN / 中文) 12px/400, separados por espaço (sem divisórias); estado ativo sinalizado por espaçamento, não por cor.
 
@@ -168,8 +194,8 @@ Regras:
 
 1. **Header** transparente fixo (66px).
 2. **Hero** full-bleed: mídia iridescente + headline display único + scroll indicator inferior-esquerdo (+ opcionalmente 1 Ghost Pill escuro, somente se o brief exigir; o headline não leva CTA colado).
-3. **Manifesto**: faixa branca, heading 78px/300, texto à esquerda, container 1078px.
-4. **Trabalhos/serviços**: lista de coluna única, imagem + título.
+3. **Manifesto**: texto de ~32px que acende palavra por palavra, seguido de linhas com fio de 1px.
+4. **Trabalhos**: duas colunas escalonadas, imagem + título + tags.
 5. **Faixa preta inversa** com afirmação 94px/400/0.76 (opcional).
 6. **Blocos assimétricos** texto/imagem alternados, gap de seção 46px (ou 152px para respiro maior).
 7. **Contato**: Ghost Pill claro.
@@ -227,7 +253,7 @@ Marque cada item antes de entregar; qualquer "não" é bloqueante.
 
 **Tipografia**
 - [ ] Roobert (ou Inter/Söhne) em tudo; Raleway ausente ou restrito a um título acento.
-- [ ] Display 225px/400 com entrelinha 0.70–0.76; heading 78px/300; heading-lg 94px/400/0.76.
+- [ ] Hero ~48px/400; 225px apenas no marquee; lead 28,5px/300; manifesto ~32px/400.
 - [ ] Nenhum peso ≥ 600 acima de 45px.
 - [ ] `letter-spacing: 0` fora do hover do botão.
 - [ ] Corpo/listas/endereços alinhados à esquerda.
@@ -241,7 +267,9 @@ Marque cada item antes de entregar; qualquer "não" é bloqueante.
 **Layout**
 - [ ] Container 1078px; só hero/faixas escuras full-bleed.
 - [ ] Espaçamentos múltiplos de 4px da escala; gap de seção 46px, de elemento 14px.
-- [ ] Lista de projetos em coluna única; sem grade multicoluna de cards.
+- [ ] Projetos em duas colunas escalonadas (retrato 3:4), sem chrome de card.
+- [ ] Página escura, hero granulado musgo/dourado com esfera de vidro, frases rotativas de ~48px com "i" em itálico.
+- [ ] Screenshots da referência comparados lado a lado antes de entregar.
 - [ ] Blocos assimétricos; centralização só no hero.
 - [ ] Header 66px transparente, sem sombra nem troca de cor.
 - [ ] Rodapé de três colunas, 11px, `#6d6d6d`.
